@@ -1,6 +1,8 @@
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -9,11 +11,20 @@ from app.database import get_db
 app = FastAPI(title="Task Management API")
 
 
-
-
 @app.get("/health")
-def health_check():
-    return {"status": "ok"}
+def health_check(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        db_status = "ok"
+    except OperationalError:
+        db_status = "unreachable"
+
+    overall_status = "ok" if db_status == "ok" else "degraded"
+
+    return {
+        "status": overall_status,
+        "database": db_status,
+    }
 
 
 @app.post("/tasks", response_model=schemas.TaskResponse, status_code=201)
