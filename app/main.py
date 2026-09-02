@@ -4,11 +4,11 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
 from app import models, schemas
-from app.database import Base, engine, get_db
+from app.database import get_db
 
 app = FastAPI(title="Task Management API")
 
-Base.metadata.create_all(bind=engine)
+
 
 
 @app.get("/health")
