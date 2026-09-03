@@ -1,0 +1,17 @@
+-r requirements.txt
+
+charset-normalizer==3.5.1
+colorama==0.4.6
+docker==7.2.0
+httpcore==1.0.9
+httpx==0.28.1
+iniconfig==2.3.0
+pluggy==1.6.0
+Pygments==2.21.0
+pytest==9.1.1
+requests==2.34.2
+testcontainers==4.15.0
+urllib3==2.7.0
+wrapt==2.4.0
+
+pywin32==312; sys_platform == "win32"
