@@ -9,7 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    env:
+      DATABASE_URL: postgresql://user:pass@localhost:5432/testdb
+      
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
