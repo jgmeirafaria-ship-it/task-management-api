@@ -7,11 +7,81 @@ on:
     branches: [main]
 
 jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks - procurar segredos
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar pip-audit
+        run: pip install pip-audit
+
+      - name: Analisar dependências
+        run: pip-audit -r requirements.txt
+
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Semgrep - análise estática do código
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/python
+
+  container-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Construir imagem Docker
+        run: docker build -t task-management-api:${{ github.sha }} .
+
+      - name: Trivy - analisar vulnerabilidades na imagem
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: task-management-api:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          exit-code: 1
+
+  iac-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Checkov - analisar Infrastructure as Code
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: terraform/
+          quiet: true
+          soft_fail: true
+
   test:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://user:pass@localhost:5432/testdb
-      
+
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
