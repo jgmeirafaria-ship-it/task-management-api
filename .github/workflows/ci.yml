@@ -7,11 +7,52 @@ on:
     branches: [main]
 
 jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks - procurar segredos
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar pip-audit
+        run: pip install pip-audit
+
+      - name: Analisar dependências
+        run: pip-audit -r requirements.txt
+
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Semgrep - análise estática do código
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/python
+
   test:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://user:pass@localhost:5432/testdb
-      
+
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
