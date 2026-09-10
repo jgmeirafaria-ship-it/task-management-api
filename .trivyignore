@@ -10,3 +10,10 @@ CVE-2025-59375
 # zlib1g - integer overflow em zipOpenNewFileInZip4_6, will_not_fix
 # CRITICAL, mas função não utilizada pela nossa aplicação (não geramos ZIPs)
 CVE-2023-45853
+
+# libsqlite3-0 - integer overflow no SQLite (status: affected, sem fix disponível
+# à data desta revisão). A nossa aplicação usa exclusivamente PostgreSQL,
+# nunca importa ou invoca sqlite3 - a biblioteca está presente só como
+# dependência do sistema operativo base, nunca é executada pelo nosso código.
+# Rever esta exceção quando houver Fixed Version disponível.
+CVE-2025-7458
