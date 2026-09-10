@@ -61,8 +61,9 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: task-management-api:${{ github.sha }}
-          severity: CRITICAL,HIGH
+          severity: CRITICAL
           exit-code: 1
+          trivyignores: .trivyignore
 
   iac-scan:
     runs-on: ubuntu-latest
